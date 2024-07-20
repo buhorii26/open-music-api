@@ -51,12 +51,8 @@ class AlbumsService {
     const songs = resultSongs.rows.map(SongMapToModel);
     const response = {
       ...albums,
+      songs,
     };
-
-    // jika kondisi nilai songs bernilai true atau ada isinya tampilkan response json nya
-    if (songs.length > 0) {
-      response.songs = songs;
-    }
 
     return response;
   }
