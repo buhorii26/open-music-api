@@ -15,7 +15,7 @@ class SongsHandler {
   async postSongHandler(request, h) {
     this._validator.validateSongPayload(request.payload);
     const {
-      title = 'untitled', year, genre, performer, duration, albumId,
+      title, year, genre, performer, duration, albumId,
     } = request.payload;
 
     const songId = await this._service.addSong({

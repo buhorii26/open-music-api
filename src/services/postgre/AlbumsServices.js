@@ -10,20 +10,20 @@ class AlbumsService {
   }
 
   async addAlbum({ name, year }) {
-    const id_album = `album-${nanoid(16)}`;
+    const id = `album-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id_album ',
-      values: [id_album, name, year],
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id ',
+      values: [id, name, year],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id_album) {
+    if (!result.rows[0].id) {
       throw new InvariantError('Album gagal ditambahkan');
     }
 
-    return result.rows[0].id_album;
+    return result.rows[0].id;
   }
 
   async getAlbums() {
@@ -33,7 +33,7 @@ class AlbumsService {
 
   async getAlbumById(id) {
     let query = {
-      text: 'SELECT * FROM albums WHERE id_album = $1',
+      text: 'SELECT * FROM albums WHERE id = $1',
       values: [id],
     };
     const resultAlbums = await this._pool.query(query);
@@ -41,27 +41,30 @@ class AlbumsService {
     if (!resultAlbums.rows.length) {
       throw new NotFoundError('Album tidak ditemukan');
     }
+    const albums = resultAlbums.rows.map(AlbumMapToModel)[0];
+
     query = {
-      text: 'SELECT id_songs, title, performer FROM songs WHERE "albumId" = $1',
+      text: 'SELECT * FROM songs WHERE "albumId" = $1',
       values: [id],
     };
     const resultSongs = await this._pool.query(query);
-    if (!resultSongs.rows.length) {
-      throw new NotFoundError('Album tidak ditemukan');
+    const songs = resultSongs.rows.map(SongMapToModel);
+    const response = {
+      ...albums,
+    };
+
+    // jika kondisi nilai songs bernilai true atau ada isinya tampilkan response json nya
+    if (songs.length > 0) {
+      response.songs = songs;
     }
 
-    const albums = resultAlbums.rows.map(AlbumMapToModel)[0];
-    const songs = resultSongs.rows.map(SongMapToModel);
-    return {
-      ...albums,
-      songs,
-    };
+    return response;
   }
 
-  async editAlbumById(id_album, { name, year }) {
+  async editAlbumById(id, { name, year }) {
     const query = {
-      text: 'UPDATE albums SET name = $2, year = $3 WHERE id_album = $1 RETURNING id_album',
-      values: [id_album, name, year],
+      text: 'UPDATE albums SET name = $2, year = $3 WHERE id = $1 RETURNING id',
+      values: [id, name, year],
     };
 
     const result = await this._pool.query(query);
@@ -71,10 +74,10 @@ class AlbumsService {
     }
   }
 
-  async deleteAlbumById(id_album) {
+  async deleteAlbumById(id) {
     const query = {
-      text: 'DELETE FROM albums WHERE id_album = $1 RETURNING id_album',
-      values: [id_album],
+      text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
+      values: [id],
     };
 
     const result = await this._pool.query(query);

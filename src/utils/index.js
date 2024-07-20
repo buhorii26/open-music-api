@@ -1,15 +1,15 @@
 const AlbumMapToModel = ({
-  id_album,
+  id,
   name,
   year,
 }) => ({
-  id_album,
+  id,
   name,
   year,
 });
 
 const SongMapToModel = ({
-  id_songs,
+  id,
   title,
   year,
   genre,
@@ -17,7 +17,7 @@ const SongMapToModel = ({
   duration,
   albumId,
 }) => ({
-  id_songs,
+  id,
   title,
   year,
   genre,

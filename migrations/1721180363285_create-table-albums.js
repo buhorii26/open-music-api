@@ -10,7 +10,7 @@ exports.shorthands = undefined;
  */
 exports.up = (pgm) => {
   pgm.createTable('albums', {
-    id_album: {
+    id: {
       type: 'VARCHAR(30)',
       primaryKey: true,
     },

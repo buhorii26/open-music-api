@@ -9,12 +9,13 @@
     "migrate": "node-pg-migrate"
   },
   "keywords": [],
-  "author": "",
+  "author": "Buhori",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.29.1"
+    "eslint-plugin-import": "^2.29.1",
+    "nodemon": "^3.1.4"
   },
   "dependencies": {
     "@hapi/hapi": "^21.3.10",
