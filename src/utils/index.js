@@ -26,4 +26,13 @@ const SongMapToModel = ({
   albumId,
 });
 
-module.exports = { AlbumMapToModel, SongMapToModel };
+const UserMapToModel = ({
+  id, username, password, fullname,
+}) => ({
+  id,
+  username,
+  password,
+  fullname,
+});
+
+module.exports = { AlbumMapToModel, SongMapToModel, UserMapToModel };
