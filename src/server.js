@@ -1,14 +1,16 @@
 require('dotenv').config();
 const Hapi = require('@hapi/hapi');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const Jwt = require('@hapi/jwt');
 
 // albums
 const albums = require('./api/albums');
-const AlbumsService = require('./services/postgre/AlbumsServices');
+const AlbumsService = require('./services/postgre/AlbumsService');
 const AlbumsValidator = require('./validator/albums');
 
 // songs
 const songs = require('./api/songs');
-const SongsService = require('./services/postgre/SongsServices');
+const SongsService = require('./services/postgre/SongsService');
 const SongsValidator = require('./validator/songs');
 
 // users
@@ -16,10 +18,17 @@ const users = require('./api/users');
 const UsersService = require('./services/postgre/UsersService');
 const UsersValidator = require('./validator/users');
 
+// authentications
+const authentications = require('./api/authentications');
+const AuthenticationsService = require('./services/postgre/AuthenticationsService');
+const TokenManager = require('./token/TokenManager');
+const AuthenticationsValidator = require('./validator/authentications');
+
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
   const usersService = new UsersService();
+  const authenticationsService = new AuthenticationsService();
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
 
@@ -42,6 +51,18 @@ const init = async () => {
       },
     },
     {
+      plugin: Jwt,
+    },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator,
+      },
+    },
+    {
       plugin: albums,
       options: {
         service: albumsService,
@@ -56,6 +77,23 @@ const init = async () => {
       },
     },
   ]);
+
+  // mendefinisikan strategy autentikasi jwt
+  server.auth.strategy('openmusic_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
+  });
 
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
