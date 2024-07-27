@@ -44,7 +44,7 @@ class AlbumsService {
     const albums = resultAlbums.rows.map(AlbumMapToModel)[0];
 
     query = {
-      text: 'SELECT * FROM songs WHERE "albumId" = $1',
+      text: 'SELECT id, title, performer FROM songs WHERE "albumId" = $1',
       values: [id],
     };
     const resultSongs = await this._pool.query(query);

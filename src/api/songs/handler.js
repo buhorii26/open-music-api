@@ -34,14 +34,26 @@ class SongsHandler {
     return response;
   }
 
-  async getSongsHandler() {
-    const songs = await this._service.getSongs();
-    return {
+  // async getSongsHandler() {
+  //   const songs = await this._service.getSongs();
+  //   return {
+  //     status: 'success',
+  //     data: {
+  //       songs,
+  //     },
+  //   };
+  // }
+  async getSongsHandler(request, h) {
+    const { title, performer } = request.query;
+    const songs = await this._service.getSongs(title, performer);
+    const response = h.response({
       status: 'success',
       data: {
         songs,
       },
-    };
+    });
+    response.code(200);
+    return response;
   }
 
   async getSongByIdHandler(request, h) {
