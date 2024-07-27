@@ -24,6 +24,11 @@ const AuthenticationsService = require('./services/postgre/AuthenticationsServic
 const TokenManager = require('./token/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
+// playlists
+const playlists = require('./api/playlists');
+const PlaylistsService = require('./services/postgre/PlaylistsService');
+const PlaylistsValidator = require('./validator/playlists');
+
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
@@ -31,6 +36,7 @@ const init = async () => {
   const authenticationsService = new AuthenticationsService();
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
+  const playlistsService = new PlaylistsService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -42,6 +48,30 @@ const init = async () => {
     },
   });
 
+  // registrasi plugin eksternal
+  await server.register([
+    {
+      plugin: Jwt,
+    },
+  ]);
+
+  // mendefinisikan strategy autentikasi jwt
+  server.auth.strategy('musicapp_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
+  });
+
   await server.register([
     {
       plugin: users,
@@ -49,9 +79,6 @@ const init = async () => {
         service: usersService,
         validator: UsersValidator,
       },
-    },
-    {
-      plugin: Jwt,
     },
     {
       plugin: authentications,
@@ -76,24 +103,14 @@ const init = async () => {
         validator: SongsValidator,
       },
     },
-  ]);
-
-  // mendefinisikan strategy autentikasi jwt
-  server.auth.strategy('openmusic_jwt', 'jwt', {
-    keys: process.env.ACCESS_TOKEN_KEY,
-    verify: {
-      aud: false,
-      iss: false,
-      sub: false,
-      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
-    },
-    validate: (artifacts) => ({
-      isValid: true,
-      credentials: {
-        id: artifacts.decoded.payload.id,
+    {
+      plugin: playlists,
+      options: {
+        service: playlistsService,
+        validator: PlaylistsValidator,
       },
-    }),
-  });
+    },
+  ]);
 
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
