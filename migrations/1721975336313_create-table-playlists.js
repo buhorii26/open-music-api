@@ -18,6 +18,15 @@ exports.up = (pgm) => {
       notNull: true,
     },
   });
+  /*
+  memberikan constraint foreign key pada kolom owner
+  terhadap users.id
+  */
+  pgm.addConstraint(
+    'playlists',
+    'fk_playlists.owner_users.id',
+    'FOREIGN KEY(owner) REFERENCES users(id) ON DELETE CASCADE',
+  );
 };
 
 /**
@@ -26,5 +35,8 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
+  // menghapus table playlists
   pgm.dropTable('playlists');
+  // menghapus constraint fk_playlists.owner_users.id pada tabel playlists
+  pgm.dropConstraint('playlists', 'fk_playlists.owner_users.id');
 };

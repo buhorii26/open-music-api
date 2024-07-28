@@ -34,6 +34,17 @@ exports.up = (pgm) => {
       notNull: false,
     },
   });
+  /*
+    memberikan constraint foreign key pada songs.albumId
+    terhadap albums.id
+    */
+  pgm.addConstraint('songs', 'fk_songs.albumId_albums.id', {
+    foreignKeys: {
+      columns: 'albumId',
+      references: 'albums(id)',
+      onDelete: 'CASCADE',
+    },
+  });
 };
 
 /**
@@ -42,5 +53,8 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
+  // menghapus table songs
   pgm.dropTable('songs');
+  // menghapus constraint fk_songs.albumId_albums.id pada tabel songs
+  pgm.dropConstraint('songs', 'fk_songs.albumId_albums.id');
 };

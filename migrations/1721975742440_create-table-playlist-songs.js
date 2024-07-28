@@ -50,4 +50,8 @@ terhadap playlists.id dan songs.id
  */
 exports.down = (pgm) => {
   pgm.dropTable('playlist_songs');
+  // menghapus constraint fk_playlist_songs.playlist_id_playlists.id pada tabel playlist_songs
+  pgm.dropConstraint('playlist_songs', 'fk_playlist_songs.playlist_id_playlists.id');
+  // menghapus constraint fk_playlist_songs.song_id_songs.id pada tabel playlist_songs
+  pgm.dropConstraint('playlist_songs', 'fk_playlist_songs.song_id_songs.id');
 };
