@@ -2,10 +2,11 @@ const autoBind = require('auto-bind');
 const ClientError = require('../../exceptions/ClientError');
 
 class PlaylistSongsHandler {
-  constructor(service, validator, SongsService) {
+  constructor(service, validator, SongsService, PlaylistsService) {
     this._service = service;
     this._validator = validator;
     this._songsService = SongsService;
+    this._playlistsService = PlaylistsService;
 
     autoBind(this);
   }
@@ -16,6 +17,8 @@ class PlaylistSongsHandler {
       const { id: playlistId } = request.params;
       const { songId } = request.payload;
       const { id: credentialId } = request.auth.credentials;
+      // verifikasi playlist access
+      await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
       // Periksa apakah songId ada di tabel songs
       await this._songsService.verifySong(songId);
       const playlistSongsId = await this._service.addSongToPlaylist({
