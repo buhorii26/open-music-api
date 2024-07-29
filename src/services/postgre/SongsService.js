@@ -55,6 +55,21 @@ class SongsService {
     return SongMapToModel(result.rows[0]);
   }
 
+  async verifySong(songId) {
+    const query = {
+      text: 'SELECT id FROM songs WHERE id = $1',
+      values: [songId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Lagu tidak ditemukan');
+    }
+
+    return result.rows[0];
+  }
+
   async getSongByAlbumId(id) {
     const query = {
       text: 'SELECT id, title, performer FROM songs WHERE albumId = $1',

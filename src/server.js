@@ -29,10 +29,10 @@ const playlists = require('./api/playlists');
 const PlaylistsService = require('./services/postgre/PlaylistsService');
 const PlaylistsValidator = require('./validator/playlists');
 
-// playlist_songs
-const playlist_songs = require('./api/playlist-songs');
+// playlistSongs
+const playlistSongs = require('./api/playlistSongs');
 const PlaylistSongsService = require('./services/postgre/PlaylistSongsService');
-const PlaylistSongsValidator = require('./validator/playlist-songs');
+const PlaylistSongsValidator = require('./validator/playlistSongs');
 
 const ClientError = require('./exceptions/ClientError');
 
@@ -117,7 +117,7 @@ const init = async () => {
       },
     },
     {
-      plugin: playlist_songs,
+      plugin: playlistSongs,
       options: {
         service: playlistSongsService,
         validator: PlaylistSongsValidator,

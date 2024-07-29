@@ -2,9 +2,10 @@ const autoBind = require('auto-bind');
 const ClientError = require('../../exceptions/ClientError');
 
 class PlaylistSongsHandler {
-  constructor(service, validator) {
+  constructor(service, validator, SongsService) {
     this._service = service;
     this._validator = validator;
+    this._songsService = SongsService;
 
     autoBind(this);
   }
@@ -12,17 +13,22 @@ class PlaylistSongsHandler {
   async postSongToPlaylistHandler(request, h) {
     try {
       this._validator.validatePlaylistSongsPayload(request.payload);
-      const { name = 'untitled' } = request.payload;
+      const { id: playlistId } = request.params;
+      const { songId } = request.payload;
       const { id: credentialId } = request.auth.credentials;
-      const playlistId = await this._service.addSongToPlaylists({
-        name, owner: credentialId,
+      // Periksa apakah songId ada di tabel songs
+      await this._songsService.verifySong(songId);
+      const playlistSongsId = await this._service.addSongToPlaylist({
+        playlistId,
+        songId,
+        owner: credentialId,
       });
 
       const response = h.response({
         status: 'success',
         message: 'Lagu berhasil ditambahkan ke dalam playlists',
         data: {
-          playlistId,
+          playlistSongsId,
         },
       });
       response.code(201);
