@@ -18,7 +18,10 @@ class PlaylistSongsHandler {
       const { songId } = request.payload;
       const { id: credentialId } = request.auth.credentials;
       // verifikasi playlist access
-      await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
+      await this._playlistsService.verifyPlaylistSongsAccess(
+        playlistId,
+        credentialId,
+      );
       // Periksa apakah songId ada di tabel songs
       await this._songsService.verifySong(songId);
       const playlistSongsId = await this._service.addSongToPlaylist({
@@ -57,7 +60,24 @@ class PlaylistSongsHandler {
     }
   }
 
-  // async getSongsOnPlaylistHandler(request, h) {}
+  async getSongOnPlaylistHandler(request, h) {
+    const { id: playlistId } = request.params;
+    const { id: credentialId } = request.auth.credentials;
+    // verifikasi playlist access
+    await this._playlistsService.verifyPlaylistSongsAccess(
+      playlistId,
+      credentialId,
+    );
+    const playlist = await this._service.getSongInPlaylist(playlistId, credentialId);
+    const response = h.response({
+      status: 'success',
+      data: {
+        playlist,
+      },
+    });
+    response.code(200);
+    return response;
+  }
 
   // async deleteSongsOnPlaylistHandler(request, h) {}
 }
