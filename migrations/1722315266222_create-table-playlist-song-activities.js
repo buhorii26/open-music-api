@@ -1,0 +1,93 @@
+/**
+ * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
+ */
+exports.shorthands = undefined;
+
+/**
+ * @param pgm {import('node-pg-migrate').MigrationBuilder}
+ * @param run {() => void | undefined}
+ * @returns {Promise<void> | void}
+ */
+exports.up = (pgm) => {
+  pgm.createTable('playlist_song_activities', {
+    id: {
+      type: 'VARCHAR(50)',
+      primaryKey: true,
+    },
+    playlist_id: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
+    song_id: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
+    user_id: {
+      type: 'VARCHAR(50)',
+      notNull: true,
+    },
+    action: {
+      type: 'TEXT',
+      notNull: true,
+    },
+    time: {
+      type: 'INT',
+      notNull: true,
+    },
+  });
+  /*
+    memberikan constraint foreign key pada playlist_song_activities.playlist_id
+    terhadap playlists.id
+    */
+  pgm.addConstraint(
+    'playlist_song_activities',
+    'fk_playlist_song_activities.playlist_id_playlists.id',
+    {
+      foreignKeys: {
+        columns: 'playlist_id',
+        references: 'playlists(id)',
+        onDelete: 'CASCADE',
+      },
+    },
+  );
+  /*
+    memberikan constraint foreign key pada playlist_song_activities.song_id
+    terhadap songs.id
+    */
+  pgm.addConstraint(
+    'playlist_song_activities',
+    'fk_playlist_song_activities.song_id_songs.id',
+    {
+      foreignKeys: {
+        columns: 'song_id',
+        references: 'songs(id)',
+        onDelete: 'CASCADE',
+      },
+    },
+  );
+  /*
+    memberikan constraint foreign key pada playlist_song_activities.user_id
+    terhadap users.id
+    */
+  pgm.addConstraint(
+    'playlist_song_activities',
+    'fk_playlist_song_activities.user_id_users.id',
+    {
+      foreignKeys: {
+        columns: 'user_id',
+        references: 'users(id)',
+        onDelete: 'CASCADE',
+      },
+    },
+  );
+};
+
+/**
+ * @param pgm {import('node-pg-migrate').MigrationBuilder}
+ * @param run {() => void | undefined}
+ * @returns {Promise<void> | void}
+ */
+exports.down = (pgm) => {
+  pgm.dropConstraint('fk_playlist_song_activities.playlist_id_on_playlists.id');
+  pgm.dropTable('playlist_song_activities');
+};
