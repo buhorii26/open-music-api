@@ -68,7 +68,10 @@ class PlaylistSongsHandler {
       playlistId,
       credentialId,
     );
-    const playlist = await this._service.getSongInPlaylist(playlistId, credentialId);
+    const playlist = await this._service.getSongInPlaylist(
+      playlistId,
+      credentialId,
+    );
     const response = h.response({
       status: 'success',
       data: {
@@ -79,7 +82,26 @@ class PlaylistSongsHandler {
     return response;
   }
 
-  // async deleteSongsOnPlaylistHandler(request, h) {}
+  async deleteSongOnPlaylistHandler(request, h) {
+    const { id: playlistId } = request.params;
+    const { songId } = request.payload;
+    const { id: credentialId } = request.auth.credentials;
+    // validasi apakah songId bertipe string atau bukan
+    this._validator.validatePlaylistSongsPayload({ songId });
+    // verifikasi playlist access
+    await this._playlistsService.verifyPlaylistSongsAccess(
+      playlistId,
+      credentialId,
+    );
+    await this._service.deleteSongInPlaylist(playlistId, songId);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Lagu berhasil dihapus dari playlist',
+    });
+    response.code(200);
+    return response;
+  }
 }
 
 module.exports = PlaylistSongsHandler;

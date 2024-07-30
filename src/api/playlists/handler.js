@@ -61,8 +61,14 @@ class PlaylistsHandler {
   }
 
   async deletePlaylistsHandler(request, h) {
-    const { id } = request.params;
-    await this._service.deletePlaylistsById(id);
+    const { id: playlistId } = request.params;
+    const { id: credentialId } = request.auth.credentials;
+    // verifikasi playlist access
+    await this._service.verifyPlaylistSongsAccess(
+      playlistId,
+      credentialId,
+    );
+    await this._service.deletePlaylistsById(playlistId);
 
     const response = h.response({
       status: 'success',
