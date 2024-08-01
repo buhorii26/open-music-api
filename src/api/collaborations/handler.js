@@ -32,7 +32,6 @@ class CollaborationsHandler {
         playlistId,
         userId,
       });
-      console.log(userId);
       const response = h.response({
         status: 'success',
         message: 'Kolaborasi berhasil ditambahkan',
