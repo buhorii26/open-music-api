@@ -2,11 +2,11 @@ const autoBind = require('auto-bind');
 const ClientError = require('../../exceptions/ClientError');
 
 class CollaborationsHandler {
-  constructor(collaborationsService, playlistsService, validator) {
+  constructor(collaborationsService, playlistsService, usersService, validator) {
     this._collaborationsService = collaborationsService;
     this._playlistsService = playlistsService;
+    this._usersService = usersService;
     this._validator = validator;
-    console.log(validator);
     autoBind(this);
   }
 
@@ -20,10 +20,19 @@ class CollaborationsHandler {
         playlistId,
         credentialId,
       );
+      // Verifikasi userId
+      const user = await this._usersService.getUserById(userId);
+      if (!user) {
+        return h.response({
+          status: 'fail',
+          message: 'User tidak ditemukan',
+        }).code(404);
+      }
       const collaborationId = await this._collaborationsService.addCollaboration({
         playlistId,
         userId,
       });
+      console.log(userId);
       const response = h.response({
         status: 'success',
         message: 'Kolaborasi berhasil ditambahkan',
