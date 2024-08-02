@@ -105,7 +105,8 @@ class PlaylistSongsHandler {
     const { id: playlistId } = request.params;
     const { songId } = request.payload;
     const { id: credentialId } = request.auth.credentials;
-    // Verifikasi akses ke playlist (pemilik atau kolaborator)
+    // validasi apakah songId bertipe string atau bukan
+    this._validator.validatePlaylistSongsPayload({ songId });
     try {
       await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
     } catch (error) {
