@@ -19,11 +19,14 @@ class PlaylistSongActivitiesHandler {
         playlistId,
         credentialId,
       );
-      await this._service.getActivitesInPlaylist(playlistId);
+      const activities = await this._service.getActivitesInPlaylist(playlistId);
 
       const response = h.response({
         status: 'success',
-        message: 'Activities berhasil!',
+        data: {
+          playlistId,
+          activities,
+        },
       });
       response.code(200);
       return response;
