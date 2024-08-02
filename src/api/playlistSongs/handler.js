@@ -2,11 +2,12 @@ const autoBind = require('auto-bind');
 const ClientError = require('../../exceptions/ClientError');
 
 class PlaylistSongsHandler {
-  constructor(service, validator, SongsService, PlaylistsService) {
+  constructor(service, validator, SongsService, PlaylistsService, CollaborationsService) {
     this._service = service;
     this._validator = validator;
     this._songsService = SongsService;
     this._playlistsService = PlaylistsService;
+    this._collaborationsService = CollaborationsService;
 
     autoBind(this);
   }
@@ -17,11 +18,21 @@ class PlaylistSongsHandler {
       const { id: playlistId } = request.params;
       const { songId } = request.payload;
       const { id: credentialId } = request.auth.credentials;
-      // verifikasi playlist access
-      await this._playlistsService.verifyPlaylistSongsAccess(
-        playlistId,
-        credentialId,
-      );
+
+      // Verifikasi akses ke playlist (pemilik atau kolaborator)
+      try {
+        await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
+      } catch (error) {
+        console.log('User is not the owner, checking collaborator:', error.message);
+        try {
+          await this._collaborationsService.verifyCollaborator(playlistId, credentialId);
+        } catch (collaborationError) {
+          console.log('User is not a collaborator, retrying playlist access:', collaborationError.message);
+          // Mengembalikan verifikasi playlist access setelah kolaborasi dihapus
+          await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
+        }
+      }
+
       // Periksa apakah songId ada di tabel songs
       await this._songsService.verifySong(songId);
       const playlistSongsId = await this._service.addSongToPlaylist({
@@ -32,7 +43,7 @@ class PlaylistSongsHandler {
 
       const response = h.response({
         status: 'success',
-        message: 'Lagu berhasil ditambahkan ke dalam playlists',
+        message: 'Lagu berhasil ditambahkan ke dalam playlist',
         data: {
           playlistSongsId,
         },
@@ -63,11 +74,19 @@ class PlaylistSongsHandler {
   async getSongOnPlaylistHandler(request, h) {
     const { id: playlistId } = request.params;
     const { id: credentialId } = request.auth.credentials;
-    // verifikasi playlist access
-    await this._playlistsService.verifyPlaylistSongsAccess(
-      playlistId,
-      credentialId,
-    );
+    // Verifikasi akses ke playlist (pemilik atau kolaborator)
+    try {
+      await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
+    } catch (error) {
+      console.log('User is not the owner, checking collaborator:', error.message);
+      try {
+        await this._collaborationsService.verifyCollaborator(playlistId, credentialId);
+      } catch (collaborationError) {
+        console.log('User is not a collaborator, retrying playlist access:', collaborationError.message);
+        // Mengembalikan verifikasi playlist access setelah kolaborasi dihapus
+        await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
+      }
+    }
     const playlist = await this._service.getSongInPlaylist(
       playlistId,
       credentialId,
@@ -86,13 +105,19 @@ class PlaylistSongsHandler {
     const { id: playlistId } = request.params;
     const { songId } = request.payload;
     const { id: credentialId } = request.auth.credentials;
-    // validasi apakah songId bertipe string atau bukan
-    this._validator.validatePlaylistSongsPayload({ songId });
-    // verifikasi playlist access
-    await this._playlistsService.verifyPlaylistSongsAccess(
-      playlistId,
-      credentialId,
-    );
+    // Verifikasi akses ke playlist (pemilik atau kolaborator)
+    try {
+      await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
+    } catch (error) {
+      console.log('User is not the owner, checking collaborator:', error.message);
+      try {
+        await this._collaborationsService.verifyCollaborator(playlistId, credentialId);
+      } catch (collaborationError) {
+        console.log('User is not a collaborator, retrying playlist access:', collaborationError.message);
+        // Mengembalikan verifikasi playlist access setelah kolaborasi dihapus
+        await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
+      }
+    }
     await this._service.deleteSongInPlaylist(playlistId, songId);
 
     const response = h.response({
