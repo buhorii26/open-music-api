@@ -31,7 +31,7 @@ exports.up = (pgm) => {
       notNull: true,
     },
     time: {
-      type: 'INT',
+      type: 'TEXT',
       notNull: true,
     },
   });
