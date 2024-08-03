@@ -44,9 +44,6 @@ class PlaylistSongsHandler {
       await this._service.addToActivity({
         playlistId, songId, credentialId, action: 'add', time,
       });
-      await this._service.addToActivity({
-        playlistId, songId, credentialId, action: 'delete', time,
-      });
 
       const response = h.response({
         status: 'success',
