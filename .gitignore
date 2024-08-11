@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 .env
+src/api/uploads/file
 
 # Editor directories and files
 .vscode/*
