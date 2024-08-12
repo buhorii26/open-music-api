@@ -70,6 +70,21 @@ class AlbumsService {
     }
   }
 
+  async editCoverAlbumById(albumId, coverUrl) {
+    const query = {
+      text: 'UPDATE albums SET coverUrl = $4 WHERE id = $1 RETURNING id',
+      values: [albumId, coverUrl],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError(
+        'Gagal memperbarui Cover Album. Id tidak ditemukan',
+      );
+    }
+  }
+
   async deleteAlbumById(id) {
     const query = {
       text: 'DELETE FROM albums WHERE id = $1 RETURNING id',

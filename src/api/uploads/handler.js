@@ -1,14 +1,15 @@
 const autoBind = require('auto-bind');
 
 class UploadsHandler {
-  constructor(service, validator) {
+  constructor(service, albumsService, validator) {
     this._service = service;
+    this._albumsService = albumsService;
     this._validator = validator;
-
     autoBind(this);
   }
 
   async postUploadCoverImageHandler(request, h) {
+    const { id: albumId } = request.params;
     const { cover } = request.payload;
     if (!cover || !cover.hapi) {
       const response = h.response({
@@ -21,11 +22,17 @@ class UploadsHandler {
     this._validator.validateImageHeaders(cover.hapi.headers);
 
     const filename = await this._service.writeFile(cover, cover.hapi);
+
+    // insert into database
+    const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/uploads/images/${filename}`;
+    await this._albumsService.editCoverAlbumById(albumId, coverUrl);
+
+    // response json
     const response = h.response({
       status: 'success',
       message: 'Sampul berhasil diunggah',
       cover: {
-        fileLocation: `http://${process.env.HOST}:${process.env.PORT}/uploads/images/${filename}`,
+        coverUrl: `http://${process.env.HOST}:${process.env.PORT}/uploads/images/${filename}`,
       },
     });
     response.code(201);
