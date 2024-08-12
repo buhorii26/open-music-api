@@ -24,8 +24,8 @@ class UploadsHandler {
     const filename = await this._service.writeFile(cover, cover.hapi);
 
     // insert into database
-    const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/uploads/images/${filename}`;
-    await this._albumsService.editCoverAlbumById(albumId, coverUrl);
+    const url = `http://${process.env.HOST}:${process.env.PORT}/uploads/images/${filename}`;
+    await this._albumsService.editCoverAlbumById(albumId, url);
 
     // response json
     const response = h.response({
