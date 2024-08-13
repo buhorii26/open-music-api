@@ -102,12 +102,38 @@ class AlbumsHandler {
     response.code(201);
     return response;
   }
-  // async getLikeAlbumHandler(request, h) {
 
-  // }
-  // async deleteLikeAlbumHandler(request, h) {
+  async getLikeAlbumHandler(request, h) {
+    const { id: albumId } = request.params;
 
-  // }
+    const { source, likeCounts: likes } = await this._service.getAlbumLikesById(
+      albumId,
+    );
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        likes,
+      },
+    });
+    response.header('X-Data-Source', source);
+    response.code(200);
+    return response;
+  }
+
+  async deleteLikeAlbumHandler(request, h) {
+    const { id: userId } = request.auth.credentials;
+    const { id: albumId } = request.params;
+
+    await this._service.deleteLikeAlbum(albumId, userId);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Unlike album',
+    });
+    response.code(200);
+    return response;
+  }
 }
 
 module.exports = AlbumsHandler;
