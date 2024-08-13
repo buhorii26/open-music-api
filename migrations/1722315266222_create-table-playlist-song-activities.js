@@ -72,11 +72,6 @@ exports.up = (pgm) => {
   );
 };
 
-/**
- * @param pgm {import('node-pg-migrate').MigrationBuilder}
- * @param run {() => void | undefined}
- * @returns {Promise<void> | void}
- */
 exports.down = (pgm) => {
   pgm.dropConstraint('fk_playlist_song_activities.playlist_id_on_playlists.id');
   pgm.dropTable('playlist_song_activities');

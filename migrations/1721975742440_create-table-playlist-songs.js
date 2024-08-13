@@ -38,11 +38,6 @@ terhadap playlists.id dan songs.id
   );
 };
 
-/**
- * @param pgm {import('node-pg-migrate').MigrationBuilder}
- * @param run {() => void | undefined}
- * @returns {Promise<void> | void}
- */
 exports.down = (pgm) => {
   pgm.dropTable('playlist_songs');
   // menghapus constraint fk_playlist_songs.playlist_id_playlists.id pada tabel playlist_songs

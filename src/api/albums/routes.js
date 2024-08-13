@@ -24,6 +24,21 @@ const routes = (handler) => [
     path: '/albums/{id}',
     handler: (request, h) => handler.deleteAlbumByIdHandler(request, h),
   },
+  {
+    method: 'POST',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.postLikeAlbumHandler(request, h),
+  },
+  {
+    method: 'GET',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.getLikeAlbumHandler(request, h),
+  },
+  {
+    method: 'DELETE',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.deleteLikeAlbumHandler(request, h),
+  },
 ];
 
 module.exports = routes;
