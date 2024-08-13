@@ -1,11 +1,7 @@
 const autoBind = require('auto-bind');
 
 class AlbumsHandler {
-  constructor(
-    service,
-    validator,
-
-  ) {
+  constructor(service, validator) {
     this._service = service;
     this._validator = validator;
 
@@ -77,6 +73,41 @@ class AlbumsHandler {
     response.code(200);
     return response;
   }
+
+  async postLikeAlbumHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { id: userId } = request.auth.credentials;
+
+    await this._service.getAlbumById(albumId);
+
+    const liked = await this._service.checkLikeAlbum(userId, albumId);
+
+    if (!liked) {
+      await this._service.addLikeAlbum(userId, albumId);
+    } else {
+      // Bad Request!
+      const response = h.response({
+        status: 'fail',
+        message: 'Maaf, hanya bisa menyukai album 1 kali saja.',
+      });
+      response.code(400);
+      return response;
+    }
+
+    const response = h.response({
+      status: 'success',
+      message: 'Berhasil menyukai album.',
+    });
+
+    response.code(201);
+    return response;
+  }
+  // async getLikeAlbumHandler(request, h) {
+
+  // }
+  // async deleteLikeAlbumHandler(request, h) {
+
+  // }
 }
 
 module.exports = AlbumsHandler;

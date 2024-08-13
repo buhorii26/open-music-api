@@ -14,7 +14,7 @@ class CollaborationsService {
       values: [id, playlistId, userId],
     };
     const result = await this._pool.query(query);
-    if (!result.rowCount) {
+    if (!result.rows[0].id) {
       throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
     return result.rows[0].id;
