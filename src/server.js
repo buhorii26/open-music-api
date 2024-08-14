@@ -1,7 +1,6 @@
 require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const Inert = require('@hapi/inert');
 const path = require('path');
 

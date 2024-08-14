@@ -6,7 +6,6 @@ class PlaylistSongActivitiesHandler {
     this._service = service;
     this._playlistsService = playlistsService;
     this._validator = validator;
-
     autoBind(this);
   }
 

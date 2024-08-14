@@ -8,7 +8,6 @@ class PlaylistSongsHandler {
     this._songsService = SongsService;
     this._playlistsService = PlaylistsService;
     this._collaborationsService = CollaborationsService;
-
     autoBind(this);
   }
 
