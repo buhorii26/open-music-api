@@ -22,11 +22,11 @@ class PlaylistSongsHandler {
       try {
         await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
       } catch (error) {
-        console.log('User is not the owner, checking collaborator:', error.message);
+        console.log(error.message);
         try {
           await this._collaborationsService.verifyCollaborator(playlistId, credentialId);
         } catch (collaborationError) {
-          console.log('User is not a collaborator, retrying playlist access:', collaborationError.message);
+          console.log(collaborationError.message);
           // Mengembalikan verifikasi playlist access setelah kolaborasi dihapus
           await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
         }
@@ -81,11 +81,11 @@ class PlaylistSongsHandler {
     try {
       await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
     } catch (error) {
-      console.log('User is not the owner, checking collaborator:', error.message);
+      console.log(error.message);
       try {
         await this._collaborationsService.verifyCollaborator(playlistId, credentialId);
       } catch (collaborationError) {
-        console.log('User is not a collaborator, retrying playlist access:', collaborationError.message);
+        console.log(collaborationError.message);
         // Mengembalikan verifikasi playlist access setelah kolaborasi dihapus
         await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
       }
@@ -110,11 +110,11 @@ class PlaylistSongsHandler {
     try {
       await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
     } catch (error) {
-      console.log('User is not the owner, checking collaborator:', error.message);
+      console.log(error.message);
       try {
         await this._collaborationsService.verifyCollaborator(playlistId, credentialId);
       } catch (collaborationError) {
-        console.log('User is not a collaborator, retrying playlist access:', collaborationError.message);
+        console.log(collaborationError.message);
         // Mengembalikan verifikasi playlist access setelah kolaborasi dihapus
         await this._playlistsService.verifyPlaylistSongsAccess(playlistId, credentialId);
       }
